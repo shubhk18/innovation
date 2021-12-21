@@ -1,4 +1,5 @@
 import mysql.connector
+import OpenSSL.crypto
 
 username = "root"
 password = "mypass"
@@ -35,10 +36,38 @@ def fetch_data():
         print("carID =", row[0])
         print("name =", row[1])
 
+def readfile():
+    file1 = open("private.key", "r")
+    string  = file1.read()
+    #print("string : ",string)
+    add_data(8, string)
+    file1.close()
 
-add_data(6, "KIA sonnet")
+def readx509Certificate():
+    certFile = open("selfsigned.crt").read()
+    c = OpenSSL.crypto
+    cert = c.load_certificate(c.FILETYPE_PEM, certFile)
 
-fetch_data()
+
+    privatekeyFile = open("private.key").read()
+    key = c.load_privatekey(c.FILETYPE_PEM, privatekeyFile)
+    print(key)
+
+    context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+    context.use_privatekey(key)
+    context.use_certificate(cert)
+    try:
+        context.check_privatekey()
+        print("matches for subject name :",cert.get_subject())
+    except OpenSSL.SSL.Error:
+        print(OpenSSL.SSL.Error)
+readx509Certificate()
+
+#readfile()
+
+#add_data(8, )
+
+#fetch_data()
 
 
 connection.close()
