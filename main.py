@@ -25,7 +25,20 @@ def add_data(id, CarName):
     connection.commit()
     print("Successfully added entry to database")
 
+def fetch_data():
+    sql_select_Query = "select * from cars"
+    cursor = connection.cursor()
+    cursor.execute(sql_select_Query)
+    # get all records
+    records = cursor.fetchall()
+    for row in records:
+        print("carID =", row[0])
+        print("name =", row[1])
+
 
 add_data(6, "KIA sonnet")
+
+fetch_data()
+
 
 connection.close()
